@@ -1,0 +1,41 @@
+{
+   
+    
+	
+    "TC_01_Validating_HomePage_Objects" :	     
+    {    
+		"Contact_Mail_Address": "test@google.com",
+		"Menus":"FlightsHotelsTrainsBusesCabsActivitiesPackagesVisa & ForexDeals & Offers",
+		"Homepage_Data":"Domestic and International Flights"	 
+
+    },
+	"TC_02_Flights_SearchFlightDetails" :	     
+    {    
+		
+		"Menus":"FlightsHotelsTrainsBusesCabsActivitiesPackagesVisa & ForexDeals & Offers",
+		"Homepage_Data":"Domestic and International Flights",
+		"From_City":"Bangalore",	 
+		"To_City":"Delhi",
+		"Departure_Date":"2023-10-15",
+		"Return_Date":"2023-10-20"
+		
+		 
+		 
+
+	},
+	"TC_03_Mobile_Flight_Search" :
+	{
+		"Menus":"FlightsHotelsTrainsBusesCabsActivitiesPackagesVisa & ForexDeals & Offers",
+		"Homepage_Data":"Domestic and International Flights",
+		"From_City":"Chennai",
+		"To_City":"Mumbai",
+		"Departure_Date":"2026-12-20",
+		"Return_Date":""
+	},
+	"TC_04_MakeMyTrip" :
+	{
+		"title":"MakeMyTrip - #1 Travel Website 50% OFF on Hotels, Flights & Holiday"
+	}
+	
+	
+}

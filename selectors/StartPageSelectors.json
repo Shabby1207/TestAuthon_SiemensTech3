@@ -1,0 +1,10 @@
+
+{      "MainPage_WebElement_Home_SearchTitle" :" //*[@id='root']/div[4]/h2",
+    "MainPage_WebElement_UserId" : "//*[@id='logout_form:j_idt69']/ul/li/a/span[2]",
+    "MainPage_WebElement_UserId_upadted":"//a[@class='ui-menuitem-link ui-submenu-link ui-corner-all']/span[2]",
+    "MainPage_WebElement_HeaderZone" : "//*[@id='header-right-zone']",
+    "MainPage_WebElement_AppName" : "//span[@class='app-name']"
+ 
+    
+    }
+    

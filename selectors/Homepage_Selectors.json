@@ -1,0 +1,12 @@
+{
+    "MainPage_WebElement_Home_SearchTitle": "//div[@class='ui-outputpanel ui-widget']/h1",
+    "fromCitySelector": "//span[text()='From' and @class='sc-12foipm-26 bIIzJX']/following-sibling::input",
+    "fromcityselector_lable":"//*[@id='root']/div[4]/div/div/div[2]/div[1]/div/div/p",
+    "toCitySelector_lable":"//*[@id='root']/div[4]/div/div/div[2]/div[2]/div/div[1]/p",
+    "toCitySelector": "//span[text()='To' and @class='sc-12foipm-26 bIIzJX']/following-sibling::input",
+    "departureDateSelector": "//span[text()='Departure' and @class='sc-12foipm-26 bIIzJX']/following-sibling::input",
+    "returnDateSelector": "input[name=\"returnDate\"]",
+    "passengersSelector": "//span[text()='Travellers & Class']",
+    "searchFlightsButtonSelector": "//span[text()='SEARCH FLIGHTS']",
+    "Search_Flight_Details_Label":"//*[@id='root']/div/div[2]/div[2]/div/div[2]/p/span"
+}

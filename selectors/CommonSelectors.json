@@ -1,0 +1,28 @@
+{  "Page_Title":"//*[@id='login-page']/head/title",
+  "UserName" : "//*[@id='username']",
+  "Password"  : "//*[@id='password']",
+  "Submit": "//*[@name='submit']",
+  "Logout":"//*[@id='logout_form:j_idt69']",
+  "Sign-IN" :"//*[@id='j_idt87:loginRedirect']/em",
+  "Menu_Search":"//a[@class='search']",
+  "Menu_Create":"//*[@class='create']",
+  
+  "Search_btn_Search":"//*[@id='all-in-one-messagesearchform:search-btn']",
+   
+ "MainPage_Link_User_Logout" : "//*[@id='get_sign_in']/div/ul/li[2]",
+ 
+ "MainPage_Link_Logout" : "//*[@id='logout_form:j_idt69']/ul/li/ul/li",
+
+"MainPage_WebElement_LogoutDialog" :"//div[@class='ui-confirm-dialog ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container']",
+
+"MainPage_WebButton_LogoutCConfirm" : "//div[@class='ui-dialog-buttonpane ui-dialog-footer ui-widget-content ui-helper-clearfix']/button[1]",
+
+
+"MainPage_WebButton_LogoutCancel" : "//div[@class='ui-dialog-buttonpane ui-dialog-footer ui-widget-content ui-helper-clearfix']/button[2]",
+"LogoutPage_Content":"//*[@id='content']/div",
+"MainPage_WebElement_UserId" : "//*[@id='logout_form:j_idt69']/ul/li/a",
+"MainPage_WebElement_UserId_updated":"//a[@class='ui-menuitem-link ui-submenu-link ui-corner-all']/span[2]",
+"MainPage_WebElement_LogoutDialog_content_old":"//*[@id='j_idt55:j_idt56_content']/span[2]",
+"MainPage_WebElement_LogoutDialog_content":"//div[@class='ui-confirm-dialog ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container']/div[2]/span[2]"
+
+}
