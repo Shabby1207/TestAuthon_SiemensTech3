@@ -1,5 +1,5 @@
 const common = `
-    --require-module ts-node/register
+  --require-module ts-node/register/transpile-only
     
     --require steps/**/*.steps.ts
     --require src/**/*.ts

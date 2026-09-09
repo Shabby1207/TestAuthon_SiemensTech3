@@ -25,6 +25,7 @@ dotenv.config({ override: true });
 
 // eslint-disable-next-line no-var
 var browser: ChromiumBrowser | FirefoxBrowser | WebKitBrowser;
+let activeBrowserName: 'chromium' | 'firefox' | 'webkit' = 'chromium';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -35,12 +36,17 @@ setDefaultTimeout(process.env.PWDEBUG ? -1 : 60 * 40000);
 //const extensionPath = './extension'
 const browserOptions: LaunchOptions = {
   headless: false,
-  channel:"chrome",
   slowMo: 0,
   
   //args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--disable-extensions-except=${extensionPath}`,
  // `--load-extension=${extensionPath}`,],
-  args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
+  args: [
+    '--use-fake-ui-for-media-stream',
+    '--use-fake-device-for-media-stream',
+    '--disable-popup-blocking',
+    '--disable-notifications',
+    '--disable-infobars'
+  ],
 
 
   //downloadsPath : browser.downloadsPath
@@ -78,18 +84,28 @@ function getMobileContextOptions() {
 }
 //@autor :Suneetha K
 BeforeAll(async function () {
-  switch (process.env.BROWSER) {
-      case 'firefox':
-        browser = await firefox.launch(browserOptions);
+  const browserName = (process.env.BROWSER || 'chromium').toLowerCase();
+
+  switch (browserName) {
+      case 'firefox': {
+        activeBrowserName = 'firefox';
+        const { channel, ...firefoxOptions } = browserOptions as LaunchOptions & { channel?: string };
+        browser = await firefox.launch(firefoxOptions);
         break;
-      case 'webkit':
-          browser = await webkit.launch(browserOptions);
-            break;
+      }
+      case 'webkit': {
+        activeBrowserName = 'webkit';
+        const { channel, ...webkitOptions } = browserOptions as LaunchOptions & { channel?: string };
+        browser = await webkit.launch(webkitOptions);
+        break;
+      }
       case 'chromium':
-            browser = await chromium.launch((browserOptions));
-            break;     
+        activeBrowserName = 'chromium';
+        browser = await chromium.launch({ ...browserOptions, channel: process.env.CHROMIUM_CHANNEL || 'chrome' });
+        break;
       default:
-          browser = await firefox.launch(browserOptions);
+        activeBrowserName = 'chromium';
+        browser = await chromium.launch({ ...browserOptions, channel: process.env.CHROMIUM_CHANNEL || 'chrome' });
       
 
       //browserType ='Chromium'
@@ -117,14 +133,31 @@ Before(async function (this: ICustomWorld) {
     console.log(`Running in mobile emulation mode using device: ${mobile.deviceName}`);
     this.context = await browser.newContext(mobile.contextOptions);
   } else {
+    const permissions = activeBrowserName === 'webkit'
+      ? ['geolocation']
+      : ['geolocation', 'notifications'];
+
     this.context = await browser.newContext({
       acceptDownloads: true,
+      permissions,
       recordVideo: process.env.PWVIDEO ? { dir: 'screenshots' } : undefined,
       viewport: { width: 1400, height: 1024 }
     });
   }
 
   this.page = await this.context.newPage();
+  this.page.on('dialog', async (dialog) => {
+    await dialog.dismiss().catch(() => {});
+  });
+  this.page.on('popup', async (popupPage) => {
+    popupPage.on('dialog', async (dialog) => {
+      await dialog.dismiss().catch(() => {});
+    });
+    // Close unexpected marketing popups/tabs and keep payment popups open.
+    if (!/checkout|payment|razorpay|bank/i.test(popupPage.url())) {
+      await popupPage.close().catch(() => {});
+    }
+  });
   await this.page.setDefaultTimeout(6000);
   if (this.context?.tracing) {
     await this.context.tracing.start({
@@ -245,6 +278,11 @@ await fs.writeFile(data_path, TestNode_outdata)
 After(async function (this: ICustomWorld, hookParameter: ITestCaseHookParameter) {
   const { result, pickle } = hookParameter;
   if (!result) return;
+  const resultDetails = result as unknown as {
+    message?: string;
+    exception?: { message?: string; stack?: string } | string;
+    stack?: string;
+  };
 
   // Prepare names and folders
   const scenarioName = pickle.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
@@ -265,6 +303,28 @@ After(async function (this: ICustomWorld, hookParameter: ITestCaseHookParameter)
   // Conditional logic: pass or fail
   if (result.status == "FAILED") {
     await this.attach(`❌ Scenario "${scenarioName}" failed`);
+    const errorMessage =
+      resultDetails.message ||
+      (typeof resultDetails.exception === 'string' ? resultDetails.exception : resultDetails.exception?.message) ||
+      'No failure message provided by Cucumber runtime.';
+    await this.attach(`Failure message: ${errorMessage}`, 'text/plain');
+
+    const errorStack =
+      resultDetails.stack ||
+      (typeof resultDetails.exception === 'string' ? undefined : resultDetails.exception?.stack);
+    if (errorStack) {
+      await this.attach(`Failure stack:\n${errorStack}`, 'text/plain');
+    }
+
+    if (this.page && !this.page.isClosed()) {
+      await this.attach(`Current URL: ${this.page.url()}`, 'text/plain');
+      try {
+        const pageTitle = await this.page.title();
+        await this.attach(`Current title: ${pageTitle}`, 'text/plain');
+      } catch {
+        // Ignore page title read failures in teardown.
+      }
+    }
   } else if (result.status == "PASSED") {
     await this.attach(`✅ Scenario "${scenarioName}" passed`);
   }

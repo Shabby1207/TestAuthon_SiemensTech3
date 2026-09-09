@@ -1,4 +1,4 @@
 {
-  "CurrentFeature": "Search for Flights with One-way Option",
-  "Test_Name": "TC_04_MakeMyTrip"
+  "CurrentFeature": "Validate sign-in flow with Hinglish language, mobile number and terms acceptance",
+  "Test_Name": "TC_05_Gajab_Bargaining_Application"
 }

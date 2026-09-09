@@ -217,6 +217,18 @@ public  GetTestData_Node(filename:any) {
       {
         DataNode1 = testdata["TC_04_MakeMyTrip"]
       }
+      else if(CurrentTestscenario=="TC_05_Gajab_Login")
+      {
+        DataNode1 = testdata["TC_05_Gajab_Login"]
+      }
+      else if(CurrentTestscenario=="TC_05_Gajab_Bargaining_Application")
+      {
+        DataNode1 = testdata["TC_05_Gajab_Login"]
+      }
+      else if(CurrentTestscenario=="TC_06_Gajab_Login_And_Home_Validation")
+      {
+        DataNode1 = testdata["TC_06_Gajab_Login_And_Home_Validation"]
+      }
   
   
           }

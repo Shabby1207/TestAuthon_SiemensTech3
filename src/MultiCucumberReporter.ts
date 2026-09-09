@@ -18,8 +18,18 @@ function mergeCucumberJsons(): void {
 
   for (const file of files) {
     const filePath = path.join(reportJson, file);
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    merged = merged.concat(data);
+    try {
+      const content = fs.readFileSync(filePath, 'utf-8').trim();
+      if (!content) {
+        continue;
+      }
+
+      const data = JSON.parse(content);
+      merged = merged.concat(data);
+    } catch (error) {
+      console.warn(`Skipping invalid JSON report file: ${filePath}`);
+      console.warn(error);
+    }
   }
 
   /* if (!fs.existsSync(finalDir)) fs.mkdirSync(finalDir, { recursive: true });

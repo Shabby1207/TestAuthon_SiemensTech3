@@ -1,183 +1,180 @@
-# Playwright BDD Framework Guide (Web + Mobile)
+# Playwright BDD Framework Guide (Latest)
 
-## 1) What this framework is
+Last updated: 2026-09-09
 
-This is a TypeScript BDD automation framework using:
-- Playwright for browser automation
-- Cucumber for feature-driven test scenarios (Given/When/Then)
-- Page Object Model for reusable UI actions
-- HTML reporting for execution results
+## 1) Framework snapshot
 
-It now supports:
-- Web desktop testing (default)
-- Mobile web testing using Playwright device emulation
+This repository is a TypeScript BDD automation framework built primarily on:
 
-Important limitation:
-- Playwright in this framework is for web automation (desktop and mobile web emulation), not native mobile app UI automation.
+- Playwright (browser automation)
+- Cucumber (Gherkin + step execution)
+- Page Object Model (reusable page actions)
+- HTML report generation (single-run and aggregated)
 
-## 2) Project structure and purpose
+Primary execution path is Cucumber + hooks, not Playwright Test runner.
 
-- `features/`
-  - Write business-readable test scenarios (`.feature` files)
-  - Example: `TC_01_Validating_HomePage_Objects.feature`
+## 2) Current technology and versions
 
-- `steps/`
-  - Step definitions for Gherkin sentences in feature files
-  - Example: `Given Launching Application` maps to TypeScript functions
+From package configuration:
 
-- `pages/`
-  - Page Object classes with reusable UI actions and validations
-  - Keep selectors usage and page interactions here
+- Node package: Demo_Project
+- Playwright: 1.38.1 (dependency)
+- Playwright Test: ^1.63.0 (devDependency)
+- Cucumber core: @cucumber/cucumber 7.3.2
+- TypeScript: ^4.9.4
+- ts-node: 10.9.1
 
-- `selectors/`
-  - JSON locator repositories (XPath/CSS)
-  - Central place to maintain selectors
+## 3) Repo structure (what each folder does)
 
-- `Lib/`
-  - Common reusable helper actions and utilities
-  - Example: click/fill/select wrappers, data helpers
+- features/
+  - Feature files and tags (business-readable scenarios)
+- steps/
+  - Step definition implementations
+- pages/
+  - Page Objects and reusable page-level actions
+- selectors/
+  - JSON selectors used by page classes
+- Lib/
+  - Shared helpers and web actions
+- src/
+  - Runtime glue code (hooks, world, config, reporters)
+- testdata/
+  - Input and runtime data files
+- test_results_BDD/
+  - Cucumber JSON, HTML reports, screenshots, traces
 
-- `src/`
-  - Framework setup and lifecycle files
-  - `Hooks.ts`: browser/context/page setup and teardown
-  - `Custom-world.ts`: scenario context object
-  - `CucumberReporter.ts` and `MultiCucumberReporter.ts`: report generation
+## 4) How execution works now
 
-- `testdata/`
-  - Test input and runtime data files
+### Core flow
 
-- `test_results_BDD/`
-  - Execution outputs: cucumber JSON, HTML reports, screenshots, traces
+1. Cucumber runs scenarios by tag or full suite.
+2. src/Hooks.ts creates browser + context + page.
+3. Steps call pages and shared actions.
+4. After scenario execution:
+   - screenshot and trace artifacts are captured on failures
+   - cucumber.json is copied and per-suite HTML reports are generated
 
-## 3) Where to write new test scripts
+### Browser and context behavior
 
-### A) New test scenario
-1. Create or update a `.feature` file in `features/`.
-2. Add scenarios and tags (example: `@TC03`, `@Smoke`).
+- Browser comes from BROWSER env (default: chromium).
+- Chromium launch uses channel from CHROMIUM_CHANNEL or chrome.
+- Dialogs are auto-dismissed.
+- Unexpected popup tabs are auto-closed unless URL indicates checkout/payment flow.
 
-### B) Implement steps
-1. Add matching step methods in `steps/*.steps.ts`.
-2. Keep assertions and flow checks in step files.
+## 5) Mobile web emulation (current behavior)
 
-### C) Add page actions
-1. Add reusable methods in `pages/*.ts`.
-2. Keep low-level selector operations in page classes.
+Mobile mode is supported through environment variables consumed in src/Hooks.ts:
 
-### D) Add or update selectors
-1. Add selectors in `selectors/*.json`.
-2. Reuse selector constants from page classes.
+- MOBILE_EMULATION
+  - true -> mobile emulation context
+  - false -> desktop context
+- DEVICE_NAME
+  - Playwright device descriptor (default: Pixel 5)
 
-## 4) Mobile testing support added
+Important runtime note:
 
-Mobile support is implemented via Playwright device emulation in `src/Hooks.ts`.
+- dotenv is loaded with override: true, so values in .env override same-named variables passed from terminal.
+- If you need to switch device or mobile mode for a run, update .env first.
 
-New environment switches:
-- `MOBILE_EMULATION`
-  - `"false"` = desktop mode
-  - `"true"` = mobile emulation mode
-- `DEVICE_NAME`
-  - Playwright device descriptor name
-  - Examples: `Pixel 5`, `iPhone 14`, `Galaxy S9+`
+List valid Playwright device names with:
 
-When mobile mode is enabled, each scenario context is created with the selected device profile.
+```powershell
+npm run mobile:devices
+```
 
-Note:
-- This framework is configured to always prioritize `.env` values at runtime.
-- Even if `MOBILE_EMULATION` or `DEVICE_NAME` are passed from terminal, `.env` values override them.
+## 6) Available feature tags
 
-## 5) Setup and install
+Current tags discovered in feature files:
 
-From project root:
+- @all
+- @TC01
+- @TC02
+- @TC03
+- @TC04
+- @TC05
+- @TC06
+- @Smoke
+- @mobile
+- @TCM01
+- @E2E
+- @Language_English
+- @Language_Hinglish
+
+## 7) NPM scripts (latest)
+
+### Common runs
+
+```powershell
+npm test
+npm run all
+npm run Smoke
+npm run TC01
+npm run TC02
+npm run TC05
+npm run TC06
+npm run Retest
+npm run Language_English
+npm run Language_Hinglish
+```
+
+### Mobile-labeled runs
+
+```powershell
+npm run mobile:TC01
+npm run mobile:TC02
+npm run mobile:TC03
+npm run mobile:TC04
+npm run mobile:Smoke
+npm run mobile:all
+```
+
+Note: mobile:* scripts currently run the same cucumber commands as desktop scripts. Actual mobile behavior depends on MOBILE_EMULATION and DEVICE_NAME from .env.
+
+### Parallel and reporting
+
+```powershell
+npm run test:parallel
+npm run MultiCucumberReporter
+```
+
+## 8) Setup
+
+From repository root:
 
 ```powershell
 npm install
 npx playwright install
 ```
 
-## 6) How to run tests
+Recommended:
 
-### A) Run all tests (desktop)
+- Keep .env PATH_VAL aligned with local repo path.
+- Verify .env URLs and credentials before running Gajab flows.
 
-```powershell
-npm test
-```
+## 9) Where outputs are generated
 
-### B) Run tagged desktop suites
+- test_results_BDD/cucumber.json
+- test_results_BDD/Batch_cumber-report.html
+- test_results_BDD/Cucumber_reports/
+- test_results_BDD/MultiCucumber_Report/index.html
+- test_results_BDD/Playwright-Artifacts/screenshots/
+- test_results_BDD/Playwright-Artifacts/traces/
 
-```powershell
-npm run TC01
-npm run TC02
-npm run Smoke
-npm run all
-```
+## 10) How to add or update tests
 
-### C) Run mobile-emulated suites (new)
+1. Add or update a .feature file in features/.
+2. Add matching steps in steps/*.steps.ts.
+3. Reuse or add page actions in pages/*.ts.
+4. Store selectors in selectors/*.json.
+5. Execute by tag using npm scripts.
 
-```powershell
-npm run mobile:TC01
-npm run mobile:TC02
-npm run mobile:Smoke
-npm run mobile:all
-```
+## 11) Practical cautions
 
-### D) See all supported Playwright mobile device names
+- PATH_VAL is used by hooks for read/write under testdata/. Wrong value can break scenario data setup.
+- playwright.config.ts exists for Playwright Test runner usage, but day-to-day framework execution is Cucumber-driven.
+- There is currently no dedicated npm script named TC03 or TC04 (non-mobile). Use a direct cucumber command with tag if needed.
 
-```powershell
-npm run mobile:devices
-```
-
-## 7) How to choose a custom mobile device
-
-Option 1: update `.env`
-- Set `MOBILE_EMULATION="true"`
-- Set `DEVICE_NAME="iPhone 14"` (or another valid device)
-
-Option 2: one-time PowerShell run
-
-```powershell
-$env:MOBILE_EMULATION="true"
-$env:DEVICE_NAME="Pixel 5"
-npx cucumber-js -f @cucumber/pretty-formatter --tags @TC01
-```
-
-## 8) Where to find test results
-
-Primary output folder:
-- `test_results_BDD/`
-
-Useful result files/folders:
-- `test_results_BDD/cucumber.json` (raw cucumber JSON)
-- `test_results_BDD/Batch_cumber-report.html` (batch html if produced)
-- `test_results_BDD/Cucumber_reports/` (single-run html reports)
-- `test_results_BDD/MultiCucumber_Report/index.html` (combined report)
-- `test_results_BDD/Playwright-Artifacts/screenshots/` (scenario screenshots)
-- `test_results_BDD/Playwright-Artifacts/traces/` (Playwright trace zip files)
-
-## 9) How reports are generated
-
-- Most suite scripts call Cucumber and then run `src/CucumberReporter.ts`
-- Combined summary can be generated with:
-
-```powershell
-npm run MultiCucumberReporter
-```
-
-## 10) Recommended best practices
-
-- Keep feature files business-readable and stable.
-- Keep step definitions thin; move UI mechanics into page classes.
-- Keep selectors centralized in JSON files.
-- Use scenario tags (`@Smoke`, `@TCxx`) for selective execution.
-- Prefer robust selectors over brittle absolute XPaths when possible.
-
-## 11) Important environment note
-
-Current `.env` contains `PATH_VAL`.
-Ensure it points to your actual local workspace path. If it is incorrect, some data read/write operations in hooks may fail.
-
-For this framework, mobile mode is controlled only by `MOBILE_EMULATION` and `DEVICE_NAME` in `.env`.
-
-## 12) Quick execution examples
+## 12) Quick commands
 
 Desktop smoke:
 
@@ -185,16 +182,21 @@ Desktop smoke:
 npm run Smoke
 ```
 
-Mobile smoke (iPhone emulation):
+Run TC05:
 
 ```powershell
-npm run mobile:Smoke
+npm run TC05
 ```
 
-Single suite on Android-like device:
+Run TC03 by tag directly:
 
 ```powershell
-$env:MOBILE_EMULATION="true"
-$env:DEVICE_NAME="Pixel 5"
-npm run TC02
+npx cucumber-js -f @cucumber/pretty-formatter --tags @TC03
+```
+
+Enable mobile mode (via .env):
+
+```env
+MOBILE_EMULATION="true"
+DEVICE_NAME="Pixel 5"
 ```

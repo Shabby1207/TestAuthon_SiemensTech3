@@ -35,6 +35,16 @@
 	"TC_04_MakeMyTrip" :
 	{
 		"title":"MakeMyTrip - #1 Travel Website 50% OFF on Hotels, Flights & Holiday"
+	},
+	"TC_05_Gajab_Login" :
+	{
+		"title":"Gajab: India’s Bargain Bazaar | Bargain Online & Save",
+		"Contact_MailAddress":"test@google.com"
+	},
+	"TC_06_Gajab_Login_And_Home_Validation" :
+	{
+		"title":"Gajab: India’s Bargain Bazaar | Bargain Online & Save",
+		"Contact_MailAddress":"test@google.com"
 	}
 	
 	
